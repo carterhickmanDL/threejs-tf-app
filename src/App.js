@@ -1,25 +1,15 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useRef, useState, useEffect } from "react";
+import SolarSystemComponent from './components/SolarSystemComponent';
+import HandGestureRecognitionComponent from './components/HandGestureRecognitionComponent';
+
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div>
+            <SolarSystemComponent />
+            <HandGestureRecognitionComponent />
+        </div>
+    );
 }
 
 export default App;
