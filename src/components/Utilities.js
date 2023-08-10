@@ -30,47 +30,85 @@ const fingerJoints = {
     18: { color: "white", size: 1 },
     19: { color: "white", size: 1 },
     20: { color: "white", size: 1 },
-  };
+  
+};
 
 
 
 // Drawing function for multiple hands
-export const drawHands = (hands, ctx, emoji) => {
-    //console.log('here');
-    let x = 0;
-    hands.forEach((hand) => {
-        x++;
-        console.log('hand', x);
-        const landmarks = hand.landmarks; 
-        //console.log(landmarks);
-        if (hand.landmarks && hand.landmarks.length > 0) {
-            console.log('well we are here...?');
-            const landmarks = hand.landmarks;
+// export const drawHands = (hands, ctx, emoji) => {
+//     hands.forEach((hand) => {
+//         const landmarks = hand.keypoints;
+
+//         if ((landmarks !== undefined) && landmarks.length > 0) {
+//             //console.log('well we are here...?');
             
+//             for (let j = 0; j < Object.keys(fingerJoints).length; j++) {
+//                 let finger = Object.keys(fingerJoints)[j];
+//                 for (let k = 0; k < fingerJoints[finger].length - 1; k++) {
+//                     const firstJointIndex = fingerJoints[finger][k];
+//                     const secondJointIndex = fingerJoints[finger][k + 1];
+
+//                     ctx.beginPath();
+//                     ctx.moveTo(
+                        
+//                         landmarks[firstJointIndex][0],
+//                         landmarks[firstJointIndex][1]
+//                     );
+//                     console.log('landmarks[firstJointIndex][0]', landmarks[firstJointIndex][0]);
+//                     console.log('landmarks[firstJointIndex][1]', landmarks[firstJointIndex][1]);
+//                     ctx.lineTo(
+//                         landmarks[secondJointIndex][0],
+//                         landmarks[secondJointIndex][1]
+//                     );
+//                     ctx.strokeStyle = "plum";
+//                     ctx.lineWidth = 4;
+//                     ctx.stroke();
+                
+//                 }
+//             }
+
+//             for (let i = 0; i < landmarks.length; i++) {
+//                 const x = landmarks[i][0];
+//                 const y = landmarks[i][1];
+//                 ctx.beginPath();
+//                 ctx.arc(x, y, style[i]["size"], 0, 3 * Math.PI);
+//                 ctx.fillStyle = style[i]["color"];
+//                 ctx.fill();
+//             }
+//         }
+//     });
+// };
+export const drawHands = (hands, ctx, emoji) => {
+    hands.forEach((hand) => {
+        const landmarks = hand.keypoints;
+
+        if ((landmarks !== undefined) && landmarks.length > 0) {
+            // Iterate through finger joints
             for (let j = 0; j < Object.keys(fingerJoints).length; j++) {
                 let finger = Object.keys(fingerJoints)[j];
                 for (let k = 0; k < fingerJoints[finger].length - 1; k++) {
                     const firstJointIndex = fingerJoints[finger][k];
                     const secondJointIndex = fingerJoints[finger][k + 1];
-                    
+ 
+                    const firstJoint = landmarks[firstJointIndex];
+                    const secondJoint = landmarks[secondJointIndex];
+
                     ctx.beginPath();
-                    ctx.moveTo(
-                        landmarks[firstJointIndex][0],
-                        landmarks[firstJointIndex][1]
-                    );
-                    ctx.lineTo(
-                        landmarks[secondJointIndex][0],
-                        landmarks[secondJointIndex][1]
-                    );
+                    ctx.moveTo(firstJoint.x, firstJoint.y);
+                    ctx.lineTo(secondJoint.x, secondJoint.y);
                     ctx.strokeStyle = "plum";
                     ctx.lineWidth = 4;
                     ctx.stroke();
                 }
             }
 
+            // Draw keypoints
             for (let i = 0; i < landmarks.length; i++) {
-                const x = landmarks[i][0];
-                const y = landmarks[i][1];
+                const keypoint = landmarks[i];
+                const x = keypoint.x;
+                const y = keypoint.y;
+
                 ctx.beginPath();
                 ctx.arc(x, y, style[i]["size"], 0, 3 * Math.PI);
                 ctx.fillStyle = style[i]["color"];
@@ -81,57 +119,3 @@ export const drawHands = (hands, ctx, emoji) => {
 };
 
 
-
-// // Drawing function
-// export const drawHand = (predictions, ctx, emoji) => {
-//     // Check if we have predictions
-//     if (predictions.length > 0) {
-//       // Loop through each prediction
-//       predictions.forEach((prediction) => {
-//         // Grab landmarks
-//         const landmarks = prediction.landmarks;
-  
-//         // Loop through fingers
-//         for (let j = 0; j < Object.keys(fingerJoints).length; j++) {
-//           let finger = Object.keys(fingerJoints)[j];
-//           //  Loop through pairs of joints
-//           for (let k = 0; k < fingerJoints[finger].length - 1; k++) {
-//             // Get pairs of joints
-//             const firstJointIndex = fingerJoints[finger][k];
-//             const secondJointIndex = fingerJoints[finger][k + 1];
-  
-//             // Draw path
-//             ctx.beginPath();
-//             ctx.moveTo(
-//               landmarks[firstJointIndex][0],
-//               landmarks[firstJointIndex][1]
-//             );
-//             ctx.lineTo(
-//               landmarks[secondJointIndex][0],
-//               landmarks[secondJointIndex][1]
-//             );
-//             ctx.strokeStyle = "plum";
-//             ctx.lineWidth = 4;
-//             ctx.stroke();
-//           }
-//         }
-  
-//         // Loop through landmarks and draw em
-//         for (let i = 0; i < landmarks.length; i++) {
-//           // Get x point
-//           const x = landmarks[i][0];
-//           console.log('x: ', x);
-//           // Get y point
-//           const y = landmarks[i][1];
-//           console.log('y: ', y);
-//           // Start drawing
-//           ctx.beginPath();
-//           ctx.arc(x, y, style[i]["size"], 0, 3 * Math.PI);
-  
-//           // Set line color
-//           ctx.fillStyle = style[i]["color"];
-//           ctx.fill();
-//         }
-//       });
-//     }
-// };"

@@ -68,8 +68,8 @@ function HandGestureRecognitionComponent() {
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <Webcam ref={webcamRef} style={{ position: 'absolute', top: '10px', left: '10px' }} />
-            <canvas ref={canvasRef} style={{ position: 'absolute', top: '200px', left: '200px'}} />
-        </div>
+            <canvas ref={canvasRef} style={{ position: 'absolute', top: '1500px', left: '1500px'}} />
+        </div> 
     );
 }
 
