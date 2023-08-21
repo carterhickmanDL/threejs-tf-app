@@ -1,3 +1,11 @@
+import React, { useRef, useState, useEffect } from "react";
+import * as fp from "fingerpose";
+import { squishGesture } from "./Squish";
+import victory from "./victory.png";
+import thumbs_up from "./thumbs_up.png";
+
+
+
 // Points for fingers
 const fingerJoints = {
     thumb: [0, 1, 2, 3, 4],
@@ -33,57 +41,44 @@ const fingerJoints = {
   
 };
 
+async function detectGesture(hand) {
+    const GE = new fp.GestureEstimator([
+        fp.Gestures.VictoryGesture,
+        fp.Gestures.ThumbsUpGesture,
+        squishGesture
+    ]);
+    const gesture = await GE.estimate(hand.keypoints, 4);
+    console.log(hand.keypoints);
+    //console.log(gesture);
+
+    if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
+        const confidence = gesture.gestures.map(
+            (prediction) => prediction.confidence
+        );
+        const maxConfidence = confidence.indexOf(
+            Math.max.apply(null, confidence)
+        );
+
+        if (maxConfidence !== -1) { // Check if a valid index is found
+            const predictedGesture = gesture.gestures[maxConfidence];
+            if (predictedGesture.name !== undefined) { // Check if 'name' property is defined
+                console.log(predictedGesture.name);
+            } else {
+                console.log("Predicted gesture has no 'name' property.");
+            }
+        } else {
+            console.log("No valid gestures found.");
+        }
+    }
+}
 
 
-// Drawing function for multiple hands
-// export const drawHands = (hands, ctx, emoji) => {
-//     hands.forEach((hand) => {
-//         const landmarks = hand.keypoints;
-
-//         if ((landmarks !== undefined) && landmarks.length > 0) {
-//             //console.log('well we are here...?');
-            
-//             for (let j = 0; j < Object.keys(fingerJoints).length; j++) {
-//                 let finger = Object.keys(fingerJoints)[j];
-//                 for (let k = 0; k < fingerJoints[finger].length - 1; k++) {
-//                     const firstJointIndex = fingerJoints[finger][k];
-//                     const secondJointIndex = fingerJoints[finger][k + 1];
-
-//                     ctx.beginPath();
-//                     ctx.moveTo(
-                        
-//                         landmarks[firstJointIndex][0],
-//                         landmarks[firstJointIndex][1]
-//                     );
-//                     console.log('landmarks[firstJointIndex][0]', landmarks[firstJointIndex][0]);
-//                     console.log('landmarks[firstJointIndex][1]', landmarks[firstJointIndex][1]);
-//                     ctx.lineTo(
-//                         landmarks[secondJointIndex][0],
-//                         landmarks[secondJointIndex][1]
-//                     );
-//                     ctx.strokeStyle = "plum";
-//                     ctx.lineWidth = 4;
-//                     ctx.stroke();
-                
-//                 }
-//             }
-
-//             for (let i = 0; i < landmarks.length; i++) {
-//                 const x = landmarks[i][0];
-//                 const y = landmarks[i][1];
-//                 ctx.beginPath();
-//                 ctx.arc(x, y, style[i]["size"], 0, 3 * Math.PI);
-//                 ctx.fillStyle = style[i]["color"];
-//                 ctx.fill();
-//             }
-//         }
-//     });
-// };
 export const drawHands = (hands, ctx, emoji) => {
     hands.forEach((hand) => {
+        
         const landmarks = hand.keypoints;
-
         if ((landmarks !== undefined) && landmarks.length > 0) {
+            detectGesture(hand);
             // Iterate through finger joints
             for (let j = 0; j < Object.keys(fingerJoints).length; j++) {
                 let finger = Object.keys(fingerJoints)[j];

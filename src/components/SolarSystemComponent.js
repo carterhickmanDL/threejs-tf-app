@@ -28,6 +28,7 @@ function SolarSystemComponent() {
             const material = new THREE.PointsMaterial({ color: 0xFFFFFF, size: 0.05 });
             const stars = new THREE.Points(geometry, material);
             scene.add(stars);
+
         }
 
         createStars();
@@ -38,6 +39,13 @@ function SolarSystemComponent() {
         const earthMaterial = new THREE.MeshBasicMaterial({ map: earthTexture }); 
         const earth = new THREE.Mesh(earthGeometry, earthMaterial);
         scene.add(earth);
+
+        const moonGeometry = new THREE.SphereGeometry(0.33, 32, 32);
+        const moonTexture = new THREE.TextureLoader().load(process.env.PUBLIC_URL + '/moon.jpg');
+        const moonMaterial = new THREE.MeshBasicMaterial({ map: moonTexture }); 
+        const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+        moon.position.set(3, 2, -9)
+        scene.add(moon);
 
         // Animation loop
         const animate = () => {
