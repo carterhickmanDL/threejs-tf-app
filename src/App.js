@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect } from "react";
-import SolarSystemComponent from './components/SolarSystemComponent';
-import HandGestureRecognitionComponent from './components/HandGestureRecognitionComponent';
+
+import SolarSystemComponent from './SolarSystemComponent';
+import HandGestureRecognitionComponent from './HandGestureRecognitionComponent';
 
 
 function App() {
