@@ -11,6 +11,8 @@ import * as fp from "fingerpose";
 import { squishGesture } from "./Squish.js";
 import victory from "./victory.png";
 import thumbs_up from "./thumbs_up.png";
+import GestureEstimator from './gestureSrc/GestureEstimator';
+//const path = require('path');
 
 
 
@@ -118,9 +120,19 @@ function HandGestureRecognitionComponent() {
         ]
         // console.log('victory: ', fp.Gestures.VictoryGesture);
 
-        const GE = new fp.GestureEstimator(knownGestures);
-        console.log(hand.keypoints3D);
+        //const GE = new fp.GestureEstimator(knownGestures);
 
+        
+        // You can access the values like this:
+        // console.log(handKeypointsTest[0].x); // Access the x-coordinate of the first object
+        // console.log(handKeypointsTest[1].name); // Access the name of the second object
+        
+        const GE = new GestureEstimator(knownGestures);
+        // console.log(hand.keypoints3D);
+        // const modulePath = require.resolve('/GestureEstimator');
+
+        // const absolutePath = path.resolve(modulePath);
+        // console.log('Path to GestureEstimator module:', absolutePath);
         // try {
         //     const gesture = await GE.estimate(hand.keypoints3D, 9);
         //     console.log("Estimation successful:", gesture);
@@ -129,10 +141,15 @@ function HandGestureRecognitionComponent() {
         //   }
           
 
-        const gesture = await GE.estimate(hand.keypoints3D, 1);
-        console.log(gesture);
-        console.log("Pose Data:");
-        console.log(gesture.poseData);
+        //const gesture = await GE.estimate(hand.keypoints3D, 5);
+        const gesture =  GE.estimate(hand.keypoints3D, 7);
+        // console.log('hands[0]: ',hand.keypoints3D[0].x);
+
+        // console.log(gesture);
+        // console.log("Pose Data:");
+        // console.log(gesture.poseData);
+        // console.log('message: ', gesture.message);
+
     
         if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
             // console.log("Gestures Found:");
@@ -152,8 +169,8 @@ function HandGestureRecognitionComponent() {
             if (maxConfidence !== -1) { // Check if a valid index is found
                 const predictedGesture = gesture.gestures[maxConfidence];
                 if (predictedGesture.name !== undefined) { // Check if 'name' property is defined
-                    //console.log("Predicted Gesture:");
-                    //console.log(predictedGesture.name);
+                    console.log("Predicted Gesture:");
+                    console.log(predictedGesture.name);
                 } else {
                     console.log("Predicted gesture has no 'name' property.");
                 }
@@ -174,7 +191,7 @@ function HandGestureRecognitionComponent() {
 
     
     useEffect(() => {
-      console.log("hi");
+    //   console.log("hi");
       const retryInterval = setInterval(() => {
           if (!modelLoaded) {
               loadModel();
