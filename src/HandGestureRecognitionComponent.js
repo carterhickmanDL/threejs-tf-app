@@ -13,9 +13,9 @@ import thumbs_up from "./thumbs_up.png";
 import GestureEstimator from './gestureSrc/GestureEstimator';
 import { closedFist } from './gestureSrc/gestures/ClosedFist';
 import { openPalm } from './gestureSrc/gestures/OpenPalm';
+import { fingerUp } from './gestureSrc/gestures/fingerUp';
 import { updateCameraValues } from './CameraMovement';
-
-
+import { thumbOut } from './gestureSrc/gestures/thumbOut';
 
 function HandGestureRecognitionComponent() {
     const webcamRef = useRef(null);
@@ -132,7 +132,9 @@ function HandGestureRecognitionComponent() {
             //fp.Gestures.ThumbsUpGesture, 
             //squishGesture, 
             closedFist,
-            openPalm
+            openPalm,
+            fingerUp, 
+            //thumbOut
         ]
         
         const GE = new GestureEstimator(knownGestures);
@@ -142,7 +144,7 @@ function HandGestureRecognitionComponent() {
         if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
             
             const score = gesture.gestures.map((prediction) => prediction.score);
-            
+            console.log('scores: ',score);
             const maxConfidence = score.indexOf(Math.max.apply(null, score));
     
             if (maxConfidence !== -1) { // Check if a valid index is found
@@ -172,7 +174,7 @@ function HandGestureRecognitionComponent() {
         let xMod = 0;
         let yMod = 0;
         let zMod = 0;
-        console.log('Left in CC: ', leftHand);
+        console.log('Left: ', leftHand);
         console.log('Right: ', rightHand);
 
         // Combine the two values into a single identifier
@@ -187,6 +189,18 @@ function HandGestureRecognitionComponent() {
             //right hand open, left hand closed
         case "closedFist-openPalm":
             zMod = -0.03
+            break;
+        case "fingerUp-closedFist":
+            yMod = 0.03;
+            break;
+        case "closedFist-fingerUp":
+            yMod = -0.03
+            break;
+        case "thumbOut-closedFist":
+            xMod = 0.03;
+            break;
+        case "closedFist-thumbOut":
+            xMod = -0.03;
             break;
         default:
             console.log("No matching combination found.");
