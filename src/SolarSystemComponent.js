@@ -1,8 +1,11 @@
 import React, { useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { cameraValues } from './CameraMovement';
+import { x, y, z } from './CameraMovement';
 
 function SolarSystemComponent() {
+    
     useEffect(() => {
         console.log('Setup solar system');
         const scene = new THREE.Scene();
@@ -49,15 +52,22 @@ function SolarSystemComponent() {
         scene.add(moon);
 
         // Animation loop
+        //This happens all the time
         const animate = () => {
             requestAnimationFrame(animate);
-
+            camera.position.x = x;
+            camera.position.y = y;
+            camera.position.z = z;
             // Rotate Earth
             earth.rotation.y += 0.001;
 
             controls.update();
             renderer.render(scene, camera);
         };
+
+        function fetchCameraValue(){
+
+        }
 
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -71,9 +81,9 @@ function SolarSystemComponent() {
         });
 
         animate();
-
+        fetchCameraValue();
         return () => {
-            // Clean up resources if needed
+            
         };
     }, []);
 

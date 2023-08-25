@@ -48,7 +48,7 @@ export default class GestureDescription {
       let matchingCurlFound = false;
       let highestCurlContrib = 0;
       for(const [expectedCurl, contrib] of expectedCurls) {
-        if(detectedCurl == expectedCurl) {
+        if(detectedCurl === expectedCurl) {
           score += contrib;
           highestCurlContrib = Math.max(highestCurlContrib, contrib);
           matchingCurlFound = true;
@@ -81,7 +81,7 @@ export default class GestureDescription {
       let matchingDirectionFound = false;
       let highestDirectionContrib = 0;
       for(const [expectedDirection, contrib] of expectedDirections) {
-        if(detectedDirection == expectedDirection) {
+        if(detectedDirection === expectedDirection) {
           score += contrib;
           highestDirectionContrib = Math.max(highestDirectionContrib, contrib);
           matchingDirectionFound = true;

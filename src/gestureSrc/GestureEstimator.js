@@ -15,6 +15,7 @@ export default class GestureEstimator {
 
   estimate(landmarks, minScore) {
 
+
     let gesturesFound = [];
     let mySpecialMessage = 'mySecretMessage1';
 

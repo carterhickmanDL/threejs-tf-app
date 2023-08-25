@@ -6,15 +6,14 @@ import Webcam from "react-webcam";
 import { fingerJoints } from './Utilities';
 import { style } from './Utilities';
 import '@tensorflow/tfjs-backend-webgl';
-import * as tf from '@tensorflow/tfjs-core';
 import * as fp from "fingerpose";
-import { squishGesture } from "./Squish.js";
+//import { squishGesture } from "./gestureSrc/gestures/Squish.js";
 import victory from "./victory.png";
 import thumbs_up from "./thumbs_up.png";
 import GestureEstimator from './gestureSrc/GestureEstimator';
-//const path = require('path');
-
-
+import { closedFist } from './gestureSrc/gestures/ClosedFist';
+import { openPalm } from './gestureSrc/gestures/OpenPalm';
+import { updateCameraValues } from './CameraMovement';
 
 
 
@@ -23,6 +22,10 @@ function HandGestureRecognitionComponent() {
     const canvasRef = useRef(null);
     const [model, setModel] = useState(null);
     const [modelLoaded, setModelLoaded] = useState(false);
+    //const [leftHand, setLeftHand] = useState(null);
+    let leftHand = null;
+    let rightHand = null;
+   // const [rightHand, setRightHand] = useState(null);
 
     const loadModel = async () => {  
         try {
@@ -112,75 +115,85 @@ function HandGestureRecognitionComponent() {
         });
     };
 
+    const updateHand = (hand, value) => {
+        
+        if (hand === 'Left'){
+            leftHand = value;
+        }
+        else if (hand === 'Right'){
+            rightHand = value;
+        }
+      };
+
     async function detectGesture(hand) {
 
         const knownGestures = [
-            fp.Gestures.VictoryGesture,
-            fp.Gestures.ThumbsUpGesture
+            //fp.Gestures.VictoryGesture,
+            //fp.Gestures.ThumbsUpGesture, 
+            //squishGesture, 
+            closedFist,
+            openPalm
         ]
-        // console.log('victory: ', fp.Gestures.VictoryGesture);
-
-        //const GE = new fp.GestureEstimator(knownGestures);
-
-        
-        // You can access the values like this:
-        // console.log(handKeypointsTest[0].x); // Access the x-coordinate of the first object
-        // console.log(handKeypointsTest[1].name); // Access the name of the second object
         
         const GE = new GestureEstimator(knownGestures);
-        // console.log(hand.keypoints3D);
-        // const modulePath = require.resolve('/GestureEstimator');
-
-        // const absolutePath = path.resolve(modulePath);
-        // console.log('Path to GestureEstimator module:', absolutePath);
-        // try {
-        //     const gesture = await GE.estimate(hand.keypoints3D, 9);
-        //     console.log("Estimation successful:", gesture);
-        //   } catch (error) {
-        //     console.error("Error during estimation:", error);
-        //   }
-          
-
-        //const gesture = await GE.estimate(hand.keypoints3D, 5);
-        const gesture =  GE.estimate(hand.keypoints3D, 7);
-        // console.log('hands[0]: ',hand.keypoints3D[0].x);
-
-        // console.log(gesture);
-        // console.log("Pose Data:");
-        // console.log(gesture.poseData);
-        // console.log('message: ', gesture.message);
-
-    
+      
+        const gesture =  GE.estimate(hand.keypoints3D, 3);
+        //console.log('gestures: ', gesture.gestures)
         if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
-            // console.log("Gestures Found:");
-            // console.log(gesture.gestures);
-            // let result = GE.gestures.reduce((p, c) => {
-            //     return (p.score > c.score) ? p : c
-            //   })
-            //   console.log('result: ', result);
-            //   console.log(GE.poseData);
-    
+            
             const score = gesture.gestures.map((prediction) => prediction.score);
-            // console.log("Scores:");
-            // console.log(score);
-    
+            
             const maxConfidence = score.indexOf(Math.max.apply(null, score));
     
             if (maxConfidence !== -1) { // Check if a valid index is found
                 const predictedGesture = gesture.gestures[maxConfidence];
                 if (predictedGesture.name !== undefined) { // Check if 'name' property is defined
-                    console.log("Predicted Gesture:");
-                    console.log(predictedGesture.name);
+                   //console.log("Predicted Gesture:");
+                    //console.log(hand.handedness, ": ", predictedGesture.name);
+                    updateHand(hand.handedness, predictedGesture.name)
+                    checkControls();
                 } else {
                     console.log("Predicted gesture has no 'name' property.");
+                    updateHand(hand.handedness, null)
                 }
             } else {
                 console.log("No valid gestures found.");
+                updateHand(hand.handedness, null)
             }
         } else {
             console.log('No gestures detected.');
+            updateHand(hand.handedness, null)
         }
     }
+
+
+
+    function checkControls() {
+        let xMod = 0;
+        let yMod = 0;
+        let zMod = 0;
+        console.log('Left in CC: ', leftHand);
+        console.log('Right: ', rightHand);
+
+        // Combine the two values into a single identifier
+        const combinedValue = leftHand + "-" + rightHand;
+
+        switch (combinedValue) {
+            //left hand open, right hand closed
+        case "openPalm-closedFist":
+            // When you have new values for x, y, and z
+            zMod = 0.03;
+            break;
+            //right hand open, left hand closed
+        case "closedFist-openPalm":
+            zMod = -0.03
+            break;
+        default:
+            console.log("No matching combination found.");
+        }
+        updateCameraValues(xMod, yMod, zMod);
+    }
+
  
     //This callback function will happen every time model changes. This is just to load the model
     useEffect(() => {
@@ -204,7 +217,7 @@ function HandGestureRecognitionComponent() {
           clearInterval(retryInterval); // Clear the interval when the component unmounts
       };
   }, [modelLoaded]);
-  
+
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <Webcam ref={webcamRef} style={{ position: 'absolute', top: '10px', left: '10px' }} />
