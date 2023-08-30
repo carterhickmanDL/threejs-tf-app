@@ -8,12 +8,12 @@ export const fingerUp = new GestureDescription('fingerUp');
 // - half curled (acceptable)
 // - pointing down is NOT acceptable
 fingerUp.addCurl(Finger.Index, FingerCurl.NoCurl, 0.9);
-fingerUp.addDirection(Finger.Index, FingerDirection.VerticalUp, 0.25);
-fingerUp.addDirection(Finger.Index, FingerDirection.DiagonalUpLeft, 0.25);
-fingerUp.addDirection(Finger.Index, FingerDirection.DiagonalUpRight, 0.25);
+fingerUp.addDirection(Finger.Index, FingerDirection.VerticalUp, 0.9);
+fingerUp.addDirection(Finger.Index, FingerDirection.DiagonalUpLeft, 0.5);
+fingerUp.addDirection(Finger.Index, FingerDirection.DiagonalUpRight, 0.5);
 
 for(let finger of [Finger.Middle, Finger.Ring, Finger.Pinky, Finger.Thumb]) {
-    fingerUp.addCurl(finger, FingerCurl.FullCurl, 0.75);
+    fingerUp.addCurl(finger, FingerCurl.FullCurl, 0.9);
 }
 
 // require the index finger to be somewhat left or right pointing

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { cameraValues } from './CameraMovement';
 import { x, y, z } from './CameraMovement';
 
 function SolarSystemComponent() {
@@ -60,14 +59,11 @@ function SolarSystemComponent() {
             camera.position.z = z;
             // Rotate Earth
             earth.rotation.y += 0.001;
-
             controls.update();
             renderer.render(scene, camera);
         };
 
-        function fetchCameraValue(){
 
-        }
 
         // Handle window resize
         window.addEventListener('resize', () => {
@@ -81,7 +77,6 @@ function SolarSystemComponent() {
         });
 
         animate();
-        fetchCameraValue();
         return () => {
             
         };

@@ -5,23 +5,25 @@ import { Finger, FingerCurl, FingerDirection } from '../FingerDescription';
 import GestureDescription from '../GestureDescription';
 
 
-export const squishGesture = new GestureDescription('squish');
+export const squish = new GestureDescription('squish');
 
-//Thumb
-squishGesture.addCurl(Finger.Thumb, FingerCurl.NoCurl, 1.0);
-squishGesture.addDirection(Finger.Thumb, FingerDirection.HorizontalLeft, 0.9);
-squishGesture.addDirection(Finger.Thumb, FingerDirection.HorizontalRight, 0.9);
+// //Thumb
+squish.addCurl(Finger.Thumb, FingerCurl.NoCurl, 0.8);
+squish.addDirection(Finger.Thumb, FingerDirection.HorizontalLeft, 0.6);
+squish.addDirection(Finger.Thumb, FingerDirection.HorizontalRight, 0.6);
+squish.addDirection(Finger.Thumb, FingerDirection.DiagonalUpLeft, 0.2);
+squish.addDirection(Finger.Thumb, FingerDirection.DiagonalUpRight, 0.2);
+
 
 //Index 
-squishGesture.addCurl(Finger.Index, FingerCurl.NoCurl, 0.9);
-squishGesture.addDirection(Finger.Index, FingerDirection.HorizontalLeft, 0.9);
-squishGesture.addDirection(Finger.Index, FingerDirection.HorizontalRight, 0.9);
+squish.addCurl(Finger.Index, FingerCurl.HalfCurl, 0.6);
+squish.addDirection(Finger.Index, FingerDirection.HorizontalLeft, 0.4);
+squish.addDirection(Finger.Index, FingerDirection.HorizontalRight, 0.4);
+
 
 for (let finger of [Finger.Middle, Finger.Ring, Finger.Pinky]){
-    squishGesture.addCurl(finger, FingerCurl.FullCurl, 0.9);
-    squishGesture.addDirection(finger, FingerDirection.HorizontalRight, 1.0);
-    squishGesture.addDirection(finger, FingerDirection.HorizontalLeft, 1.0);
-    console.log('squishFinger: ', finger);
+    squish.addCurl(finger, FingerCurl.FullCurl, 0.6);
+    //squish.addDirection(finger, FingerDirection.)
 }
 
 

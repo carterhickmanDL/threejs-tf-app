@@ -7,9 +7,7 @@ import { fingerJoints } from './Utilities';
 import { style } from './Utilities';
 import '@tensorflow/tfjs-backend-webgl';
 import * as fp from "fingerpose";
-//import { squishGesture } from "./gestureSrc/gestures/Squish.js";
-import victory from "./victory.png";
-import thumbs_up from "./thumbs_up.png";
+import { squish } from "./gestureSrc/gestures/Squish.js";
 import GestureEstimator from './gestureSrc/GestureEstimator';
 import { closedFist } from './gestureSrc/gestures/ClosedFist';
 import { openPalm } from './gestureSrc/gestures/OpenPalm';
@@ -25,6 +23,9 @@ function HandGestureRecognitionComponent() {
     //const [leftHand, setLeftHand] = useState(null);
     let leftHand = null;
     let rightHand = null;
+    let combinedValue = null;
+    let poseInit = false;
+    let originalCenterPoint = null;
    // const [rightHand, setRightHand] = useState(null);
 
     const loadModel = async () => {  
@@ -130,10 +131,11 @@ function HandGestureRecognitionComponent() {
         const knownGestures = [
             //fp.Gestures.VictoryGesture,
             //fp.Gestures.ThumbsUpGesture, 
-            //squishGesture, 
+            
             closedFist,
             openPalm,
             fingerUp, 
+            //squish
             //thumbOut
         ]
         
@@ -144,16 +146,17 @@ function HandGestureRecognitionComponent() {
         if (gesture.gestures !== undefined && gesture.gestures.length > 0) {
             
             const score = gesture.gestures.map((prediction) => prediction.score);
-            console.log('scores: ',score);
+            //console.log('scores: ',gesture.gestures);
             const maxConfidence = score.indexOf(Math.max.apply(null, score));
     
             if (maxConfidence !== -1) { // Check if a valid index is found
                 const predictedGesture = gesture.gestures[maxConfidence];
                 if (predictedGesture.name !== undefined) { // Check if 'name' property is defined
-                   //console.log("Predicted Gesture:");
                     //console.log(hand.handedness, ": ", predictedGesture.name);
                     updateHand(hand.handedness, predictedGesture.name)
-                    checkControls();
+                    let centerPoint = ((hand.keypoints3D[0].x) + (hand.keypoints3D[9].x)) /2
+                    //console.log('centerPoint: ', centerPoint);
+                    checkControls(centerPoint, hand.handedness);
                 } else {
                     console.log("Predicted gesture has no 'name' property.");
                     updateHand(hand.handedness, null)
@@ -168,42 +171,69 @@ function HandGestureRecognitionComponent() {
         }
     }
 
+    function setOriginalCenterPoint(centerPoint){
+        originalCenterPoint = centerPoint;
+    }
 
 
-    function checkControls() {
+
+    function checkControls(centerPoint, handedness) {
         let xMod = 0;
         let yMod = 0;
         let zMod = 0;
-        console.log('Left: ', leftHand);
-        console.log('Right: ', rightHand);
 
         // Combine the two values into a single identifier
-        const combinedValue = leftHand + "-" + rightHand;
+        if (combinedValue !== (leftHand + "-" + rightHand)){
+            combinedValue = leftHand + "-" + rightHand;
+            poseInit = true;
+        }
+        else{
+            poseInit = false;
+        }
 
         switch (combinedValue) {
             //left hand open, right hand closed
         case "openPalm-closedFist":
             // When you have new values for x, y, and z
-            zMod = 0.03;
+            if (handedness === 'Left'){
+                // if (poseInit){
+                    // setOriginalCenterPoint(centerPoint);
+                //}
+                if (centerPoint < (originalCenterPoint)){
+                    xMod = -0.03;
+                    console.log('centerPoint: ', centerPoint);
+                    console.log('OgcenterPoint: ', originalCenterPoint);
+                    console.log('centerPoint < og');
+                }
+                else if (centerPoint > (originalCenterPoint)){
+                    xMod = 0.03;
+                    console.log('centerPoint > og');
+                }
+                setOriginalCenterPoint(centerPoint);
+            }
+            
             break;
             //right hand open, left hand closed
         case "closedFist-openPalm":
-            zMod = -0.03
+            if (poseInit){
+                
+            }
+            xMod = -0.03
             break;
         case "fingerUp-closedFist":
-            yMod = 0.03;
+            zMod = 0.03;
             break;
         case "closedFist-fingerUp":
-            yMod = -0.03
+            zMod = -0.03
             break;
-        case "thumbOut-closedFist":
+        case "squish-closedFist":
             xMod = 0.03;
             break;
-        case "closedFist-thumbOut":
+        case "closedFist-squish":
             xMod = -0.03;
             break;
         default:
-            console.log("No matching combination found.");
+            //console.log("No matching combination found.");
         }
         updateCameraValues(xMod, yMod, zMod);
     }
@@ -218,7 +248,7 @@ function HandGestureRecognitionComponent() {
 
     
     useEffect(() => {
-    //   console.log("hi");
+
       const retryInterval = setInterval(() => {
           if (!modelLoaded) {
               loadModel();
@@ -235,7 +265,7 @@ function HandGestureRecognitionComponent() {
     return (
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <Webcam ref={webcamRef} style={{ position: 'absolute', top: '10px', left: '10px' }} />
-            <canvas ref={canvasRef} style={{ position: 'absolute', top: '500px', left: '750px' }} />
+            <canvas ref={canvasRef} style={{ position: 'absolute', top: '500px', left: '600px' }} />
         </div>
     );    
 }  
